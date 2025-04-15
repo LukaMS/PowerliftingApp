@@ -13,12 +13,12 @@ const formatTime = (seconds: number): string => {
 };
 
 const WorkoutModal = () => {
-  const { timer, startTimer, stopTimer, resetTimer, exercises, removeExercise } = useWorkout();
+  const { name, timer, startWorkout, stopWorkout, resetTimer, exercises, removeExercise } = useWorkout();
   const router = useRouter();
 
   useFocusEffect(
     useCallback(() => {
-      startTimer();
+      startWorkout();
       return () => {
         // Timer continues to run when the screen loses focus.
       };
@@ -26,7 +26,7 @@ const WorkoutModal = () => {
   );
 
   const finishWorkout = () => {
-    stopTimer();
+    stopWorkout();
     resetTimer();
     router.back();
   };
@@ -40,7 +40,7 @@ const WorkoutModal = () => {
     <View style={styles.modalContainer}>
       <View style={styles.headerContainer}>
         <View style={styles.headerLeft}>
-          <Text style={styles.headerTitle}>Workout</Text>
+          <Text style={styles.headerTitle}>{name}</Text>
           <Text style={styles.timerText}>{formatTime(timer)}</Text>
         </View>
         <TouchableOpacity style={styles.finishButton} onPress={finishWorkout}>
@@ -56,7 +56,7 @@ const WorkoutModal = () => {
               keyExtractor={(item, index) => index.toString()}
               renderItem={({ item }) => (
                 <ExerciseCard
-                  exerciseName={item.name}
+                  exercise={item}
                   onDelete={() => removeExercise(item.id)}
                 />
               )}

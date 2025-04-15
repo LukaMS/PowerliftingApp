@@ -4,67 +4,100 @@ import { createContext, useContext, useRef, useState } from "react";
 interface WorkoutContextType extends Workout {
   addExercise: (exercise: Exercise) => void;
   removeExercise: (id: string) => void;
-  startTimer: () => void;
-  stopTimer: () => void;
+  startWorkout: () => void;
+  stopWorkout: () => void;
   resetTimer: () => void;
-  activeWorkout: boolean,
+  activeWorkout: boolean;
 }
 
-const WorkoutContext = createContext<WorkoutContextType>({
+const initialWorkout: Workout = {
+  id: Date.now().toString(),
+  name: "Workout Test",
   exercises: [],
+  date: new Date().toISOString(),
   timer: 0,
+};
+
+const WorkoutContext = createContext<WorkoutContextType>({
+  ...initialWorkout,
   addExercise: () => {},
   removeExercise: () => {},
-  startTimer: () => {},
-  stopTimer: () => {},
+  startWorkout: () => {},
+  stopWorkout: () => {},
   resetTimer: () => {},
   activeWorkout: false,
-})
+});
 
+interface WorkoutProviderProps {
+  children: React.ReactNode;
+}
 
-const WorkoutProvider = ({children}) => {
-  const [exercises, setExercises] = useState([]);
-  const [timer, setTimer] = useState(0);
-  const timerInterval = useRef(null);
+const WorkoutProvider: React.FC<WorkoutProviderProps> = ({ children }) => {
+  const [workout, setWorkout] = useState<Workout>(initialWorkout);
+  const timerInterval = useRef<NodeJS.Timeout | null>(null);
 
-  const addExercise = (exercise) => {
-    setExercises(prevExercises => [...prevExercises, exercise]);
+  const addExercise = (exercise: Exercise) => {
+    setWorkout((prevWorkout) => ({
+      ...prevWorkout,
+      exercises: [...prevWorkout.exercises, exercise],
+    }));
   };
 
   const removeExercise = (id: string) => {
-    setExercises((prev) => prev.filter((exercise) => exercise.id !== id));
+    setWorkout((prevWorkout) => ({
+      ...prevWorkout,
+      exercises: prevWorkout.exercises.filter((exercise) => exercise.id !== id),
+    }));
   };
 
-  const startTimer = () => {
-    // Avoid multiple intervals
+  const startWorkout = () => {
+    // Reset the timer and set a new start date if desired.
+    setWorkout((prev) => ({ ...prev, timer: 0, date: new Date().toISOString() }));
     if (!timerInterval.current) {
       timerInterval.current = setInterval(() => {
-        setTimer(prevTime => prevTime + 1);
+        setWorkout((prevWorkout) => ({ ...prevWorkout, timer: prevWorkout.timer + 1 }));
       }, 1000);
     }
   };
 
-  // Function to stop the timer
-  const stopTimer = () => {
+  const stopWorkout = () => {
     if (timerInterval.current) {
       clearInterval(timerInterval.current);
-      timerInterval.current = null; // Reset the reference so the timer can restart later.
+      timerInterval.current = null;
     }
+    // Reset the workout to a fresh state by creating a new workout object.
+    setWorkout({
+      id: Date.now().toString(),
+      name: "Workout Test",
+      exercises: [],
+      date: new Date().toISOString(),
+      timer: 0,
+    });
   };
   
 
   const resetTimer = () => {
-    setTimer(0);
+    setWorkout((prevWorkout) => ({ ...prevWorkout, timer: 0 }));
   };
 
-  const activeWorkout = timer > 0;
+  const activeWorkout = timerInterval.current !== null;
 
-  return(
-    <WorkoutContext.Provider value={{exercises, timer, addExercise, removeExercise, startTimer, stopTimer, resetTimer, activeWorkout }}>
-        {children}
+  return (
+    <WorkoutContext.Provider
+      value={{
+        ...workout,
+        addExercise,
+        removeExercise,
+        startWorkout,
+        stopWorkout,
+        resetTimer,
+        activeWorkout,
+      }}
+    >
+      {children}
     </WorkoutContext.Provider>
-  )
-}
+  );
+};
 
 export default WorkoutProvider;
 

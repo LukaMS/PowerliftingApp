@@ -2,7 +2,7 @@ export type Exercise = {
     id: string;
     name: string;
     sets?: number;
-    setList?: Set[]
+    setList?: Set[];
 };
 
 export type Set = {
@@ -13,6 +13,9 @@ export type Set = {
 }
 
 export type Workout = {
+    id: string;
+    name: string;
     exercises: Exercise[];
+    date: string;
     timer: number;
   }

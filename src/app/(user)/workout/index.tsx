@@ -27,7 +27,7 @@ export default function WorkoutScreen() {
 const styles = StyleSheet.create({
   container: { 
     flex: 1, 
-    backgroundColor: '#F9F9F9' 
+    backgroundColor: '#F9F9F9',
   },
   header: { 
     fontSize: 32, 
@@ -38,6 +38,7 @@ const styles = StyleSheet.create({
   startButton: {
     backgroundColor: '#007AFF',
     padding: 15,
+    marginHorizontal: 10,
     borderRadius: 8,
     alignItems: 'center'
   },

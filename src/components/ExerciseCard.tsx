@@ -1,37 +1,36 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Animated } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Animated, Alert } from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler';
-
-interface SetDetail {
-  id: string;
-  reps: number;
-  weight: number;
-}
+import { Exercise, Set } from '@/types';
 
 interface ExerciseCardProps {
-  exerciseName: string;
-  onDelete?: () => void; // Callback for deleting the entire card.
-  initialSets?: SetDetail[];
+  exercise: Exercise;
+  onDelete?: () => void;
 }
 
-const ExerciseCard: React.FC<ExerciseCardProps> = ({ exerciseName, onDelete, initialSets }) => {
-  // Initialize with one default set if none are provided.
-  const [sets, setSets] = useState<SetDetail[]>(
-    initialSets && initialSets.length > 0
-      ? initialSets
-      : [{ id: '1', reps: 0, weight: 0 }]
+const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, onDelete }) => {
+  // Use the exercise.setList if provided or create a default set.
+  const [sets, setSets] = useState<Set[]>(
+    exercise.setList && exercise.setList.length > 0
+      ? exercise.setList
+      : [{ id: '1', setNum: 1, weight: 0, reps: 0 }]
   );
 
   // Add a new set with default values.
   const addSet = () => {
-    const newSet: SetDetail = { id: `${sets.length + 1}`, reps: 0, weight: 0 };
+    const newSet: Set = {
+      id: `${sets.length + 1}`,
+      setNum: sets.length + 1,
+      weight: 0,
+      reps: 0,
+    };
     setSets([...sets, newSet]);
   };
 
   // Update a particular set's details.
   const updateSet = (id: string, field: 'reps' | 'weight', value: number) => {
-    setSets((prevSets) =>
-      prevSets.map((set) =>
+    setSets(prevSets =>
+      prevSets.map(set =>
         set.id === id ? { ...set, [field]: value } : set
       )
     );
@@ -39,7 +38,20 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({ exerciseName, onDelete, ini
 
   // Remove a set by id.
   const removeSet = (id: string) => {
-    setSets((prevSets) => prevSets.filter((set) => set.id !== id));
+    setSets(prevSets => prevSets.filter(set => set.id !== id));
+  };
+
+  // Confirmation popup for deleting the entire card.
+  const handleDeleteCard = () => {
+    Alert.alert(
+      'Delete Exercise',
+      'Are you sure you want to delete this exercise?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'OK', onPress: onDelete }
+      ],
+      { cancelable: true }
+    );
   };
 
   // Render the right action for the swipeable row.
@@ -47,23 +59,21 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({ exerciseName, onDelete, ini
     progress: Animated.AnimatedInterpolation<number>,
     dragX: Animated.AnimatedInterpolation<number>,
     id: string
-  ) => {
-    return (
-      <TouchableOpacity style={styles.deleteButton} onPress={() => removeSet(id)}>
-        <Text style={styles.deleteButtonText}>Delete</Text>
-      </TouchableOpacity>
-    );
-  };
+  ) => (
+    <TouchableOpacity style={styles.deleteButton} onPress={() => removeSet(id)}>
+      <Text style={styles.deleteButtonText}>Delete</Text>
+    </TouchableOpacity>
+  );
 
   return (
     <View style={styles.cardContainer}>
       {/* Delete Button on Card Header */}
       {onDelete && (
-        <TouchableOpacity style={styles.cardDeleteButton} onPress={onDelete}>
+        <TouchableOpacity style={styles.cardDeleteButton} onPress={handleDeleteCard}>
           <Text style={styles.cardDeleteButtonText}>X</Text>
         </TouchableOpacity>
       )}
-      <Text style={styles.exerciseName}>{exerciseName}</Text>
+      <Text style={styles.exerciseName}>{exercise.name}</Text>
       {/* Header Row */}
       <View style={styles.rowHeader}>
         <Text style={[styles.headerLabel, styles.setColumn]}>Set</Text>
@@ -78,7 +88,7 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({ exerciseName, onDelete, ini
           }
         >
           <View style={styles.setRow}>
-            <Text style={[styles.rowText, styles.setColumn]}>{index + 1}</Text>
+            <Text style={[styles.rowText, styles.setColumn]}>{set.setNum}</Text>
             <TextInput
               style={[styles.input, styles.repsColumn]}
               keyboardType="numeric"
@@ -115,7 +125,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 15,
     marginBottom: 15,
-    position: 'relative', // enable absolute positioning for the delete button
+    position: 'relative',
     // iOS shadow
     shadowColor: '#000',
     shadowOpacity: 0.1,
@@ -126,7 +136,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#f0f0f0',
   },
-  // Delete button for the entire card.
   cardDeleteButton: {
     position: 'absolute',
     top: 10,
@@ -159,7 +168,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
-  // Define column widths.
   setColumn: {
     flex: 0.5,
     textAlign: 'center',
@@ -198,7 +206,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     paddingVertical: 5,
     paddingHorizontal: 10,
-    alignSelf: 'flex-start',
+    alignSelf: 'center',
     backgroundColor: '#007AFF',
     borderRadius: 5,
   },

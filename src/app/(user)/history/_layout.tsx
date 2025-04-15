@@ -7,6 +7,10 @@ export default function HistoryStack(){
             name="index"
             options={{ title: 'History', headerShown: false }}
         />
+        <Stack.Screen 
+            name="workoutDetail"
+            options={{ title: 'Detail', headerShown: false }}
+        />
     </Stack>
     )
 }

@@ -3,6 +3,12 @@ import { Stack } from 'expo-router';
 export default function WorkoutStack() {
   return (
     <Stack>
+      <Stack.Screen 
+        name="index"
+        options={{
+          headerShown: false,
+        }} 
+      />
       {/* The main active workout screen */}
       <Stack.Screen 
         name="activeWorkout"
