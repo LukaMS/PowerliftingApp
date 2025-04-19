@@ -1,0 +1,260 @@
+{
+    "success": true,
+    "data": {
+        "previousPage": null,
+        "nextPage": "http://exercisedb-api.vercel.app/api/v1/exercises?offset=10&limit=10",
+        "totalPages": 133,
+        "totalExercises": 1324,
+        "currentPage": 1,
+        "exercises": [
+            {
+                "exerciseId": "guT8YnS",
+                "name": "biceps pull-up",
+                "gifUrl": "https://ucarecdn.com/05fcc879-04d4-4222-8896-e3772a8a3060/guT8YnS.gif",
+                "instructions": [
+                    "Step:1 Hang from a pull-up bar with your palms facing away from you and your hands shoulder-width apart.",
+                    "Step:2 Engage your core and pull yourself up by bending your elbows, bringing your chest towards the bar.",
+                    "Step:3 Pause at the top of the movement, then slowly lower yourself back down to the starting position.",
+                    "Step:4 Repeat for the desired number of repetitions."
+                ],
+                "targetMuscles": [
+                    "biceps"
+                ],
+                "bodyParts": [
+                    "upper arms"
+                ],
+                "equipments": [
+                    "body weight"
+                ],
+                "secondaryMuscles": [
+                    "forearms",
+                    "shoulders"
+                ]
+            },
+            {
+                "exerciseId": "U6G2gk9",
+                "name": "body-up",
+                "gifUrl": "https://cdn-exercisedb.vercel.app/api/v1/images/U6G2gk9.gif",
+                "instructions": [
+                    "Step:1 Start by placing your hands on a raised surface, such as a bench or parallel bars, with your palms facing down and fingers pointing forward.",
+                    "Step:2 Extend your legs out in front of you, keeping your heels on the ground and your body straight.",
+                    "Step:3 Lower your body by bending your elbows, keeping them close to your sides, until your upper arms are parallel to the ground.",
+                    "Step:4 Pause for a moment, then push through your palms to straighten your arms and lift your body back up to the starting position.",
+                    "Step:5 Repeat for the desired number of repetitions."
+                ],
+                "targetMuscles": [
+                    "triceps"
+                ],
+                "bodyParts": [
+                    "upper arms"
+                ],
+                "equipments": [
+                    "body weight"
+                ],
+                "secondaryMuscles": [
+                    "chest",
+                    "shoulders"
+                ]
+            },
+            {
+                "exerciseId": "BReCuOn",
+                "name": "bodyweight squatting row (with towel)",
+                "gifUrl": "https://cdn-exercisedb.vercel.app/api/v1/images/BReCuOn.gif",
+                "instructions": [
+                    "Step:1 Stand with your feet shoulder-width apart, holding a towel in front of you with your palms facing down.",
+                    "Step:2 Bend your knees and lower your body into a squat position, keeping your back straight and your chest up.",
+                    "Step:3 As you lower into the squat, simultaneously pull the towel towards your chest, squeezing your shoulder blades together.",
+                    "Step:4 Pause for a moment at the bottom of the squat, then slowly return to the starting position while extending your arms.",
+                    "Step:5 Repeat for the desired number of repetitions."
+                ],
+                "targetMuscles": [
+                    "upper back"
+                ],
+                "bodyParts": [
+                    "back"
+                ],
+                "equipments": [
+                    "body weight"
+                ],
+                "secondaryMuscles": [
+                    "biceps",
+                    "shoulders"
+                ]
+            },
+            {
+                "exerciseId": "2gPfomN",
+                "name": "3/4 sit-up",
+                "gifUrl": "https://cdn-exercisedb.vercel.app/api/v1/images/2gPfomN.gif",
+                "instructions": [
+                    "Step:1 Lie flat on your back with your knees bent and feet flat on the ground.",
+                    "Step:2 Place your hands behind your head with your elbows pointing outwards.",
+                    "Step:3 Engaging your abs, slowly lift your upper body off the ground, curling forward until your torso is at a 45-degree angle.",
+                    "Step:4 Pause for a moment at the top, then slowly lower your upper body back down to the starting position.",
+                    "Step:5 Repeat for the desired number of repetitions."
+                ],
+                "targetMuscles": [
+                    "abs"
+                ],
+                "bodyParts": [
+                    "waist"
+                ],
+                "equipments": [
+                    "body weight"
+                ],
+                "secondaryMuscles": [
+                    "hip flexors",
+                    "lower back"
+                ]
+            },
+            {
+                "exerciseId": "u27Kcdz",
+                "name": "bench hip extension",
+                "gifUrl": "https://cdn-exercisedb.vercel.app/api/v1/images/u27Kcdz.gif",
+                "instructions": [
+                    "Step:1 Sit on a bench with your back against the bench and your feet flat on the ground.",
+                    "Step:2 Place your hands on the bench for support.",
+                    "Step:3 Engage your glutes and hamstrings, then lift your hips off the bench until your body forms a straight line from your knees to your shoulders.",
+                    "Step:4 Pause for a moment at the top, then slowly lower your hips back down to the starting position.",
+                    "Step:5 Repeat for the desired number of repetitions."
+                ],
+                "targetMuscles": [
+                    "glutes"
+                ],
+                "bodyParts": [
+                    "upper legs"
+                ],
+                "equipments": [
+                    "body weight"
+                ],
+                "secondaryMuscles": [
+                    "hamstrings"
+                ]
+            },
+            {
+                "exerciseId": "3xK09Sk",
+                "name": "bodyweight squatting row",
+                "gifUrl": "https://cdn-exercisedb.vercel.app/api/v1/images/3xK09Sk.gif",
+                "instructions": [
+                    "Step:1 Stand with your feet shoulder-width apart, holding onto a sturdy object or suspension trainer with your arms extended.",
+                    "Step:2 Lower your body into a squat position, keeping your back straight and your knees behind your toes.",
+                    "Step:3 From the squat position, pull your body up towards the object or suspension trainer, squeezing your shoulder blades together.",
+                    "Step:4 Pause for a moment at the top, then slowly lower your body back down to the starting position.",
+                    "Step:5 Repeat for the desired number of repetitions."
+                ],
+                "targetMuscles": [
+                    "upper back"
+                ],
+                "bodyParts": [
+                    "back"
+                ],
+                "equipments": [
+                    "body weight"
+                ],
+                "secondaryMuscles": [
+                    "biceps",
+                    "shoulders"
+                ]
+            },
+            {
+                "exerciseId": "wfotm7S",
+                "name": "bodyweight drop jump squat",
+                "gifUrl": "https://cdn-exercisedb.vercel.app/api/v1/images/wfotm7S.gif",
+                "instructions": [
+                    "Step:1 Stand with your feet shoulder-width apart.",
+                    "Step:2 Lower your body into a squat position by bending your knees and pushing your hips back.",
+                    "Step:3 Jump up explosively, extending your hips, knees, and ankles.",
+                    "Step:4 While in mid-air, quickly bring your feet together.",
+                    "Step:5 Land softly on the balls of your feet and immediately drop back into a squat position.",
+                    "Step:6 Repeat for the desired number of repetitions."
+                ],
+                "targetMuscles": [
+                    "glutes"
+                ],
+                "bodyParts": [
+                    "upper legs"
+                ],
+                "equipments": [
+                    "body weight"
+                ],
+                "secondaryMuscles": [
+                    "quadriceps",
+                    "hamstrings",
+                    "calves"
+                ]
+            },
+            {
+                "exerciseId": "sJFIDIp",
+                "name": "biceps leg concentration curl",
+                "gifUrl": "https://cdn-exercisedb.vercel.app/api/v1/images/sJFIDIp.gif",
+                "instructions": [
+                    "Step:1 Sit on a bench with your legs spread apart and your feet flat on the ground.",
+                    "Step:2 Hold a dumbbell in one hand and place your elbow on the inside of your thigh, just above the knee.",
+                    "Step:3 With your palm facing up, curl the dumbbell towards your shoulder while keeping your upper arm stationary.",
+                    "Step:4 Squeeze your biceps at the top of the movement, then slowly lower the dumbbell back to the starting position.",
+                    "Step:5 Repeat for the desired number of repetitions, then switch arms."
+                ],
+                "targetMuscles": [
+                    "biceps"
+                ],
+                "bodyParts": [
+                    "upper arms"
+                ],
+                "equipments": [
+                    "body weight"
+                ],
+                "secondaryMuscles": [
+                    "forearms"
+                ]
+            },
+            {
+                "exerciseId": "50BETrz",
+                "name": "biceps narrow pull-ups",
+                "gifUrl": "https://cdn-exercisedb.vercel.app/api/v1/images/50BETrz.gif",
+                "instructions": [
+                    "Step:1 Hang from a pull-up bar with your palms facing towards you and your hands shoulder-width apart.",
+                    "Step:2 Engage your core and pull yourself up towards the bar, focusing on using your biceps to lift your body.",
+                    "Step:3 Pause for a moment at the top, then slowly lower yourself back down to the starting position.",
+                    "Step:4 Repeat for the desired number of repetitions."
+                ],
+                "targetMuscles": [
+                    "biceps"
+                ],
+                "bodyParts": [
+                    "upper arms"
+                ],
+                "equipments": [
+                    "body weight"
+                ],
+                "secondaryMuscles": [
+                    "forearms",
+                    "shoulders"
+                ]
+            },
+            {
+                "exerciseId": "RrLske5",
+                "name": "bench dip (knees bent)",
+                "gifUrl": "https://cdn-exercisedb.vercel.app/api/v1/images/RrLske5.gif",
+                "instructions": [
+                    "Step:1 Sit on the edge of a bench or chair with your hands gripping the edge next to your hips.",
+                    "Step:2 Slide your butt off the bench and straighten your legs in front of you, keeping your heels on the ground.",
+                    "Step:3 Bend your elbows and lower your body towards the ground, keeping your back close to the bench.",
+                    "Step:4 Pause for a moment at the bottom, then push yourself back up to the starting position.",
+                    "Step:5 Repeat for the desired number of repetitions."
+                ],
+                "targetMuscles": [
+                    "triceps"
+                ],
+                "bodyParts": [
+                    "upper arms"
+                ],
+                "equipments": [
+                    "body weight"
+                ],
+                "secondaryMuscles": [
+                    "chest",
+                    "shoulders"
+                ]
+            }
+        ]
+    }
+}

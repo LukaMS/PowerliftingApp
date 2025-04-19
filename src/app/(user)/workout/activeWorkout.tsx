@@ -1,9 +1,10 @@
-import React, { useCallback } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, Button } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useWorkout } from '@/providers/WorkoutProvider';
 import { useRouter } from 'expo-router';
 import ExerciseCard from '@/components/ExerciseCard';
+import { ExercisePicker } from '@/components/ExercisePicker';
 
 // Helper: formats seconds as "m:ss"
 const formatTime = (seconds: number): string => {
@@ -13,8 +14,10 @@ const formatTime = (seconds: number): string => {
 };
 
 const WorkoutModal = () => {
-  const { name, timer, startWorkout, stopWorkout, resetTimer, exercises, removeExercise } = useWorkout();
+  const { name, timer, startWorkout, stopWorkout, resetTimer, exercises, removeExercise, addExercise } = useWorkout();
   const router = useRouter();
+  const [pickerVisible, setPickerVisible] = useState(false);
+  const [selected, setSelected] = useState<any[]>([]);
 
   useFocusEffect(
     useCallback(() => {
@@ -53,7 +56,7 @@ const WorkoutModal = () => {
           <View style={styles.exercisesWrapper}>
             <FlatList
               data={exercises}
-              keyExtractor={(item, index) => index.toString()}
+              keyExtractor={(item) => item.id}
               renderItem={({ item }) => (
                 <ExerciseCard
                   exercise={item}
@@ -62,19 +65,35 @@ const WorkoutModal = () => {
               )}
               contentContainerStyle={styles.exercisesList}
             />
-            <TouchableOpacity style={styles.addExerciseButton} onPress={handleAddExercise}>
+            <TouchableOpacity
+              style={styles.addExerciseButton}
+              onPress={() => setPickerVisible(true)}
+            >
               <Text style={styles.addExerciseText}>Add Exercise</Text>
             </TouchableOpacity>
           </View>
         ) : (
-          // When no exercise is selected, center the placeholder and the button.
           <View style={styles.placeholderWrapper}>
             <Text style={styles.inProgressText}>Workout In Progress</Text>
-            <TouchableOpacity style={styles.addExerciseButton} onPress={handleAddExercise}>
+            <TouchableOpacity
+              style={styles.addExerciseButton}
+              onPress={() => setPickerVisible(true)}
+            >
               <Text style={styles.addExerciseText}>Add Exercise</Text>
             </TouchableOpacity>
           </View>
         )}
+
+        {/* Place the picker here so it overlays on top of everything */}
+        <ExercisePicker
+          isVisible={pickerVisible}
+          onSelect={ex => {
+            setSelected((s) => [...s, ex]);
+            addExercise(ex);
+            setPickerVisible(false);
+          }}
+          onClose={() => setPickerVisible(false)}
+        />
       </View>
     </View>
   );

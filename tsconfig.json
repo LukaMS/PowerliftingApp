@@ -7,6 +7,7 @@
       "@components/*": ["./src/components/*"],
       "@assets/*": ["./assets/*"],
       "@providers/*": ["./src/providers/*"],
+      "@db/*": ["./src/db/*"],
     }
   },
   "include": [

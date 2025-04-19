@@ -3,38 +3,49 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import 'react-native-reanimated';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+
 import { useColorScheme } from '@/components/useColorScheme';
 import WorkoutProvider from '@/providers/WorkoutProvider';
-export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
-} from 'expo-router';
+import { initDB } from '@/db';
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
+export { ErrorBoundary } from 'expo-router';
+
+// Prevent the splash screen from auto‑hiding before we’re ready.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const [loaded, error] = useFonts({
+  const [fontsLoaded] = useFonts({
     SpaceMono: require('@assets/fonts/SpaceMono-Regular.ttf'),
     ...FontAwesome.font,
   });
+  const [dbReady, setDbReady] = useState(false);
 
-  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
+  // 1) If fonts error out, crash early so you can catch it.
   useEffect(() => {
-    if (error) throw error;
-  }, [error]);
+    if (!fontsLoaded) return;
+  
+    initDB()
+      .then(() => setDbReady(true))
+      .catch(e => {
+        console.error('DB init failed:', e);
+        // you could surface an error screen here
+      });
+  }, [fontsLoaded]);
+  
 
+  // 3) When _both_ fonts AND DB are ready, hide the splash.
   useEffect(() => {
-    if (loaded) {
+    if (fontsLoaded && dbReady) {
       SplashScreen.hideAsync();
     }
-  }, [loaded]);
+  }, [fontsLoaded, dbReady]);
 
-  if (!loaded) {
-    return null;
+  // 4) Don’t render your nav tree until everything’s in place.
+  if (!fontsLoaded || !dbReady) {
+    return null; // still on splash
   }
 
   return <RootLayoutNav />;
@@ -44,7 +55,7 @@ function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
   return (
-    <GestureHandlerRootView style={{flex: 1}}>
+    <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <WorkoutProvider>
           <Stack>
