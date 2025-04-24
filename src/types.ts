@@ -19,3 +19,8 @@ export type Workout = {
     date: string;
     timer: number;
   }
+
+  export type Profile = {
+    id: string;
+    group: string;
+  };

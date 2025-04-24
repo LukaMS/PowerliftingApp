@@ -10,6 +10,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useColorScheme } from '@/components/useColorScheme';
 import WorkoutProvider from '@/providers/WorkoutProvider';
 import { initDB } from '@/db';
+import AuthProvider from '@/providers/AuthProvider';
 
 export { ErrorBoundary } from 'expo-router';
 
@@ -57,11 +58,14 @@ function RootLayoutNav() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <WorkoutProvider>
-          <Stack>
-            <Stack.Screen name="(user)" options={{ headerShown: false }} />
-          </Stack>
-        </WorkoutProvider>
+        <AuthProvider>
+          <WorkoutProvider>
+            <Stack screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="(auth)" />
+              <Stack.Screen name="(user)" />
+            </Stack>
+          </WorkoutProvider>
+        </AuthProvider>
       </ThemeProvider>
     </GestureHandlerRootView>
   );
