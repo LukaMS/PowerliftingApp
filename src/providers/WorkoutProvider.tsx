@@ -4,10 +4,12 @@ import { createContext, useContext, useRef, useState } from "react";
 interface WorkoutContextType extends Workout {
   addExercise: (exercise: Exercise) => void;
   removeExercise: (id: string) => void;
+  updateExercise: (exercise: Exercise) => void;
   startWorkout: () => void;
   stopWorkout: () => void;
   resetTimer: () => void;
   activeWorkout: boolean;
+  getWorkout: () => Workout;
 }
 
 const initialWorkout: Workout = {
@@ -22,10 +24,12 @@ const WorkoutContext = createContext<WorkoutContextType>({
   ...initialWorkout,
   addExercise: () => {},
   removeExercise: () => {},
+  updateExercise: () => {},
   startWorkout: () => {},
   stopWorkout: () => {},
   resetTimer: () => {},
   activeWorkout: false,
+  getWorkout: () => initialWorkout,
 });
 
 interface WorkoutProviderProps {
@@ -35,6 +39,8 @@ interface WorkoutProviderProps {
 const WorkoutProvider: React.FC<WorkoutProviderProps> = ({ children }) => {
   const [workout, setWorkout] = useState<Workout>(initialWorkout);
   const timerInterval = useRef<NodeJS.Timeout | null>(null);
+
+  const getWorkout = () => workout;
 
   const addExercise = (exercise: Exercise) => {
     setWorkout((prevWorkout) => ({
@@ -47,6 +53,15 @@ const WorkoutProvider: React.FC<WorkoutProviderProps> = ({ children }) => {
     setWorkout((prevWorkout) => ({
       ...prevWorkout,
       exercises: prevWorkout.exercises.filter((exercise) => exercise.id !== id),
+    }));
+  };
+
+  const updateExercise = (updated: Exercise) => {
+    setWorkout((w) => ({
+      ...w,
+      exercises: w.exercises.map((e) =>
+        e.id === updated.id ? updated : e
+      ),
     }));
   };
 
@@ -92,6 +107,8 @@ const WorkoutProvider: React.FC<WorkoutProviderProps> = ({ children }) => {
         stopWorkout,
         resetTimer,
         activeWorkout,
+        updateExercise,
+        getWorkout,
       }}
     >
       {children}

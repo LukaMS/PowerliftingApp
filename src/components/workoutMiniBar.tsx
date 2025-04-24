@@ -6,6 +6,12 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { useWorkout } from '@/providers/WorkoutProvider';
 
+const formatTime = (seconds: number): string => {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${minutes}:${remainingSeconds < 10 ? `0${remainingSeconds}` : remainingSeconds}`;
+};
+
 const WorkoutMiniBar = () => {
   const { timer } = useWorkout();
   const router = useRouter();
@@ -19,7 +25,7 @@ const WorkoutMiniBar = () => {
       style={[styles.barContainer, {bottom: 0 }]}
       onPress={handlePress}
     >
-      <Text style={styles.barText}>Workout in progress: {timer}s</Text>
+      <Text style={styles.barText}>Workout in progress: {formatTime(timer)}</Text>
     </TouchableOpacity>
   );
 };

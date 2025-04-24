@@ -1,22 +1,21 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Animated, Alert } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Animated, Alert, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler';
 import { Exercise, Set } from '@/types';
 
 interface ExerciseCardProps {
   exercise: Exercise;
   onDelete?: () => void;
+  onUpdate: (exercise: Exercise) => void;   // ← new prop
 }
 
-const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, onDelete }) => {
-  // Use the exercise.setList if provided or create a default set.
-  const [sets, setSets] = useState<Set[]>(
-    exercise.setList && exercise.setList.length > 0
-      ? exercise.setList
-      : [{ id: '1', setNum: 1, weight: 0, reps: 0 }]
-  );
+const ExerciseCard: React.FC<ExerciseCardProps> = ({
+  exercise,
+  onDelete,
+  onUpdate,
+}) => {
+  const sets = exercise.setList || [];
 
-  // Add a new set with default values.
   const addSet = () => {
     const newSet: Set = {
       id: `${sets.length + 1}`,
@@ -24,21 +23,22 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, onDelete }) => {
       weight: 0,
       reps: 0,
     };
-    setSets([...sets, newSet]);
+    onUpdate({ ...exercise, setList: [...sets, newSet] });
   };
 
-  // Update a particular set's details.
   const updateSet = (id: string, field: 'reps' | 'weight', value: number) => {
-    setSets(prevSets =>
-      prevSets.map(set =>
-        set.id === id ? { ...set, [field]: value } : set
-      )
+    const updatedSets = sets.map((s) =>
+      s.id === id ? { ...s, [field]: value } : s
     );
+    onUpdate({ ...exercise, setList: updatedSets });
   };
 
-  // Remove a set by id.
   const removeSet = (id: string) => {
-    setSets(prevSets => prevSets.filter(set => set.id !== id));
+    const filtered = sets.filter((s) => s.id !== id);
+    onUpdate({
+      ...exercise,
+      setList: filtered.map((s, i) => ({ ...s, setNum: i + 1 })),
+    });
   };
 
   // Confirmation popup for deleting the entire card.
@@ -66,54 +66,56 @@ const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, onDelete }) => {
   );
 
   return (
-    <View style={styles.cardContainer}>
-      {/* Delete Button on Card Header */}
-      {onDelete && (
-        <TouchableOpacity style={styles.cardDeleteButton} onPress={handleDeleteCard}>
-          <Text style={styles.cardDeleteButtonText}>X</Text>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <View style={styles.cardContainer}>
+        {/* Delete Button on Card Header */}
+        {onDelete && (
+          <TouchableOpacity style={styles.cardDeleteButton} onPress={handleDeleteCard}>
+            <Text style={styles.cardDeleteButtonText}>X</Text>
+          </TouchableOpacity>
+        )}
+        <Text style={styles.exerciseName}>{exercise.name}</Text>
+        {/* Header Row */}
+        <View style={styles.rowHeader}>
+          <Text style={[styles.headerLabel, styles.setColumn]}>Set</Text>
+          <Text style={[styles.headerLabel, styles.repsColumn]}>Reps</Text>
+          <Text style={[styles.headerLabel, styles.weightColumn]}>Weight</Text>
+        </View>
+        {sets.map((set, index) => (
+          <Swipeable
+            key={set.id}
+            renderRightActions={(progress, dragX) =>
+              renderRightActions(progress, dragX, set.id)
+            }
+          >
+            <View style={styles.setRow}>
+              <Text style={[styles.rowText, styles.setColumn]}>{set.setNum}</Text>
+              <TextInput
+                style={[styles.input, styles.repsColumn]}
+                keyboardType="numeric"
+                placeholder="0"
+                value={String(set.reps)}
+                onChangeText={(text) =>
+                  updateSet(set.id, 'reps', parseInt(text) || 0)
+                }
+              />
+              <TextInput
+                style={[styles.input, styles.weightColumn]}
+                keyboardType="numeric"
+                placeholder="0"
+                value={String(set.weight)}
+                onChangeText={(text) =>
+                  updateSet(set.id, 'weight', parseFloat(text) || 0)
+                }
+              />
+            </View>
+          </Swipeable>
+        ))}
+        <TouchableOpacity style={styles.addSetButton} onPress={addSet}>
+          <Text style={styles.addSetText}>+ Add Set</Text>
         </TouchableOpacity>
-      )}
-      <Text style={styles.exerciseName}>{exercise.name}</Text>
-      {/* Header Row */}
-      <View style={styles.rowHeader}>
-        <Text style={[styles.headerLabel, styles.setColumn]}>Set</Text>
-        <Text style={[styles.headerLabel, styles.repsColumn]}>Reps</Text>
-        <Text style={[styles.headerLabel, styles.weightColumn]}>Weight</Text>
       </View>
-      {sets.map((set, index) => (
-        <Swipeable
-          key={set.id}
-          renderRightActions={(progress, dragX) =>
-            renderRightActions(progress, dragX, set.id)
-          }
-        >
-          <View style={styles.setRow}>
-            <Text style={[styles.rowText, styles.setColumn]}>{set.setNum}</Text>
-            <TextInput
-              style={[styles.input, styles.repsColumn]}
-              keyboardType="numeric"
-              placeholder="0"
-              value={String(set.reps)}
-              onChangeText={(text) =>
-                updateSet(set.id, 'reps', parseInt(text) || 0)
-              }
-            />
-            <TextInput
-              style={[styles.input, styles.weightColumn]}
-              keyboardType="numeric"
-              placeholder="0"
-              value={String(set.weight)}
-              onChangeText={(text) =>
-                updateSet(set.id, 'weight', parseFloat(text) || 0)
-              }
-            />
-          </View>
-        </Swipeable>
-      ))}
-      <TouchableOpacity style={styles.addSetButton} onPress={addSet}>
-        <Text style={styles.addSetText}>+ Add Set</Text>
-      </TouchableOpacity>
-    </View>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -218,8 +220,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'red',
     justifyContent: 'center',
     alignItems: 'center',
-    width: 80,
-    height: 45,
+    width: 60,
+    height: 35,
+    marginTop: 5,
     borderRadius: 5,
   },
   deleteButtonText: {

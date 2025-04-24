@@ -13,11 +13,13 @@ export default function WorkoutScreen() {
     router.push('/(user)/workout/activeWorkout');
   };
 
+  const buttonText = activeWorkout ? 'View Workout' : 'Start Workout';
+
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.header}>Start Workout</Text>
+      <Text style={styles.header}>Workout</Text>
       <TouchableOpacity style={styles.startButton} onPress={startWorkout}>
-        <Text style={styles.buttonText}>Start Workout</Text>
+        <Text style={styles.buttonText}>{buttonText}</Text>
       </TouchableOpacity>
       {activeWorkout && <WorkoutMiniBar />}
     </SafeAreaView>
