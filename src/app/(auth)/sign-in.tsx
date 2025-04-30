@@ -16,7 +16,7 @@ export default function SignInScreen() {
       if (error) {
         Alert.alert(error.message);
       } else {
-        router.replace('/');
+        router.replace('/(user)');
       }
     } finally {
       setLoading(false);

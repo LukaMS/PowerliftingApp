@@ -17,6 +17,7 @@ export default function SignUpScreen() {
       const { error } = await supabase.auth.signUp({ email, password, options: { data: { name } } });
 
       if (error) Alert.alert(error.message);
+      console.log(error)
       router.replace('/sign-in');
     } finally {
       setLoading(false);
