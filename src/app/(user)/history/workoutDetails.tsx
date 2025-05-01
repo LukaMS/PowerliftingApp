@@ -24,7 +24,9 @@ const WorkoutDetailScreen = () => {
     return <ActivityIndicator style={styles.loader} size="large" />;
   }
   if (error || !details) {
+    console.log(error, details, workout.exercises);
     return (
+      
       <SafeAreaView style={styles.container}>
         <Text>Error loading workout details</Text>
       </SafeAreaView>
