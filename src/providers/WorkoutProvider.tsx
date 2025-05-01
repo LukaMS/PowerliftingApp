@@ -10,6 +10,7 @@ interface WorkoutContextType extends Workout {
   resetTimer: () => void;
   activeWorkout: boolean;
   getWorkout: () => Workout;
+  loadProgram: (program: Workout) => void;
 }
 
 const initialWorkout: Workout = {
@@ -30,6 +31,7 @@ const WorkoutContext = createContext<WorkoutContextType>({
   resetTimer: () => {},
   activeWorkout: false,
   getWorkout: () => initialWorkout,
+  loadProgram: () => {},
 });
 
 interface WorkoutProviderProps {
@@ -97,6 +99,15 @@ const WorkoutProvider: React.FC<WorkoutProviderProps> = ({ children }) => {
 
   const activeWorkout = timerInterval.current !== null;
 
+  const loadProgram = (program: Workout) => {
+    // start from scratch, but use program’s exercises + name
+    setWorkout({
+      ...program,
+      date: new Date().toISOString(),
+      timer: 0,
+    });
+  };
+
   return (
     <WorkoutContext.Provider
       value={{
@@ -109,6 +120,7 @@ const WorkoutProvider: React.FC<WorkoutProviderProps> = ({ children }) => {
         activeWorkout,
         updateExercise,
         getWorkout,
+        loadProgram,
       }}
     >
       {children}

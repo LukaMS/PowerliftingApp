@@ -14,6 +14,7 @@ type AuthData = {
   profile: any;
   loading: boolean;
   isAdmin: boolean;
+  logout: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthData>({
@@ -21,12 +22,20 @@ const AuthContext = createContext<AuthData>({
   loading: true,
   profile: null,
   isAdmin: false,
+  logout: async () => {},
 });
 
 export default function AuthProvider({ children }: PropsWithChildren) {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // sign out helper
+  const logout = async () => {
+    await supabase.auth.signOut();
+    setSession(null);
+    setProfile(null);
+  };
 
   useEffect(() => {
     const fetchSession = async () => {
@@ -60,7 +69,13 @@ export default function AuthProvider({ children }: PropsWithChildren) {
 
   return (
     <AuthContext.Provider
-      value={{ session, loading, profile, isAdmin: profile?.group === 'ADMIN' }}
+      value={{
+        session,
+        loading,
+        profile,
+        isAdmin: profile?.group === 'ADMIN',
+        logout,
+      }}
     >
       {children}
     </AuthContext.Provider>

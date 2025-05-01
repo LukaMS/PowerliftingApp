@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, Button, Keyboard, TouchableWithoutFeedback, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, Button, Alert, Keyboard } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useWorkout } from '@/providers/WorkoutProvider';
 import { useRouter } from 'expo-router';
@@ -53,69 +53,76 @@ const WorkoutModal = () => {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View style={styles.modalContainer}>
-        <View style={styles.headerContainer}>
-          <View style={styles.headerLeft}>
-            <Text style={styles.headerTitle}>{workoutCtx.name}</Text>
-            <Text style={styles.timerText}>{formatTime(workoutCtx.timer)}</Text>
-          </View>
-          <TouchableOpacity style={styles.finishButton} onPress={finishWorkout}>
-            <Text style={styles.finishButtonText}>Finish</Text>
-          </TouchableOpacity>
+    <View
+      style={styles.modalContainer}
+      onStartShouldSetResponder={() => true}
+      onResponderRelease={() => Keyboard.dismiss()}
+    >
+      <View style={styles.headerContainer}>
+        <View style={styles.headerLeft}>
+          <Text style={styles.headerTitle}>{workoutCtx.name}</Text>
+          <Text style={styles.timerText}>{formatTime(workoutCtx.timer)}</Text>
         </View>
+        <TouchableOpacity style={styles.finishButton} onPress={finishWorkout}>
+          <Text style={styles.finishButtonText}>Finish</Text>
+        </TouchableOpacity>
+      </View>
 
-        <View style={styles.contentContainer}>
-          {workoutCtx.exercises && workoutCtx.exercises.length > 0 ? (
-            <View style={styles.exercisesWrapper}>
-              <FlatList
-                data={workoutCtx.exercises}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item }) => (
-                  <ExerciseCard
-                    exercise={item}
-                    onDelete={() => workoutCtx.removeExercise(item.id)}
-                    onUpdate={workoutCtx.updateExercise}
-                  />
-                )}
-                contentContainerStyle={styles.exercisesList}
+      <View style={styles.contentContainer}>
+        {workoutCtx.exercises && workoutCtx.exercises.length > 0 ? (
+          <View style={styles.exercisesWrapper}>
+          <FlatList
+            data={workoutCtx.exercises}
+            keyExtractor={(item) => item.id}
+            keyboardDismissMode="on-drag"
+            keyboardShouldPersistTaps="handled"
+            renderItem={({ item }) => (
+              <ExerciseCard
+                exercise={item}
+                onDelete={() => workoutCtx.removeExercise(item.id)}
+                onUpdate={workoutCtx.updateExercise}
               />
+            )}
+            contentContainerStyle={styles.exercisesList}
+            // ← this makes the button part of the scroll
+            ListFooterComponent={() => (
               <TouchableOpacity
                 style={styles.addExerciseButton}
                 onPress={() => setPickerVisible(true)}
               >
                 <Text style={styles.addExerciseText}>Add Exercise</Text>
               </TouchableOpacity>
-            </View>
-          ) : (
-            <View style={styles.placeholderWrapper}>
-              <Text style={styles.inProgressText}>Workout In Progress</Text>
-              <TouchableOpacity
-                style={styles.addExerciseButton}
-                onPress={() => setPickerVisible(true)}
-              >
-                <Text style={styles.addExerciseText}>Add Exercise</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-
-          {/* Place the picker here so it overlays on top of everything */}
-          <ExercisePicker
-            isVisible={pickerVisible}
-            onSelect={apiEx => {
-              const minimal: Exercise = {
-                id: apiEx.id,
-                name: apiEx.name,
-                setList: [{ id: '1', setNum: 1, weight: 0, reps: 0 }],
-              };
-              workoutCtx.addExercise(minimal);
-              setPickerVisible(false);
-            }}
-            onClose={() => setPickerVisible(false)}
+            )}
           />
         </View>
+      ) : (
+          <View style={styles.placeholderWrapper}>
+            <Text style={styles.inProgressText}>Workout In Progress</Text>
+            <TouchableOpacity
+              style={styles.addExerciseButton}
+              onPress={() => setPickerVisible(true)}
+            >
+              <Text style={styles.addExerciseText}>Add Exercise</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {/* Place the picker here so it overlays on top of everything */}
+        <ExercisePicker
+          isVisible={pickerVisible}
+          onSelect={apiEx => {
+            const minimal: Exercise = {
+              id: apiEx.id,
+              name: apiEx.name,
+              setList: [{ id: '1', setNum: 1, weight: 0, reps: 0 }],
+            };
+            workoutCtx.addExercise(minimal);
+            setPickerVisible(false);
+          }}
+          onClose={() => setPickerVisible(false)}
+        />
       </View>
-    </TouchableWithoutFeedback>
+    </View>
   );
 };
 

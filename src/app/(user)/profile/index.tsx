@@ -4,9 +4,11 @@ import { useAuth } from '@/providers/AuthProvider';
 import { useProfile } from '@/hooks/useProfile';
 import { useQuery } from '@tanstack/react-query';
 import { fetchWorkoutCount } from '@/api/profile';
+import { useRouter } from 'expo-router';
 
 const ProfileScreen = () => {
-  const { session, loading: authLoading } = useAuth();
+  const { session, loading: authLoading, logout } = useAuth();
+  const router = useRouter();
   const userId = session?.user.id || '';
   const { data: profileData, isLoading: profileLoading, error: profileError } = useProfile(userId);
   const { data: workoutCount, isLoading: countLoading, error: countError } = useQuery({
@@ -50,6 +52,12 @@ const ProfileScreen = () => {
       </View>
       <TouchableOpacity style={styles.button} onPress={() => {/* TODO: navigate to edit */}}>
         <Text style={styles.buttonText}>Edit Profile</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={[styles.button, styles.logoutButton]} onPress={async () => {
+        await logout();
+        router.replace('/(auth)/sign-in');
+      }}>
+        <Text style={styles.buttonText}>Logout</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
@@ -128,6 +136,9 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
+  },
+  logoutButton: {
+    backgroundColor: '#ff3b30',
   },
   loader: {
     flex: 1,

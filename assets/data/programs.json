@@ -1,0 +1,99 @@
+[
+    {
+        "id": "1746063875261",
+        "name": "Leg Day",
+        "exercises": [
+            {
+                "id": "1435",
+                "name": "Barbell Low-Bar Squat",
+                "setList": [
+                    {
+                        "id": "1",
+                        "setNum": 1,
+                        "weight": 0,
+                        "reps": 12
+                    },
+                    {
+                        "id": "2",
+                        "setNum": 2,
+                        "weight": 0,
+                        "reps": 8
+                    },
+                    {
+                        "id": "3",
+                        "setNum": 3,
+                        "weight": 0,
+                        "reps": 8
+                    }
+                ]
+            },
+            {
+                "id": "0585",
+                "name": "Lever Leg Extension",
+                "setList": [
+                    {
+                        "id": "1",
+                        "setNum": 1,
+                        "weight": 0,
+                        "reps": 12
+                    },
+                    {
+                        "id": "2",
+                        "setNum": 2,
+                        "weight": 0,
+                        "reps": 8
+                    },
+                    {
+                        "id": "3",
+                        "setNum": 3,
+                        "weight": 0,
+                        "reps": 8
+                    }
+                ]
+            },
+            {
+                "id": "0599",
+                "name": "lever seated leg curl",
+                "setList": [
+                    {
+                        "id": "1",
+                        "setNum": 1,
+                        "weight": 0,
+                        "reps": 12
+                    },
+                    {
+                        "id": "2",
+                        "setNum": 2,
+                        "weight": 0,
+                        "reps": 8
+                    },
+                    {
+                        "id": "3",
+                        "setNum": 3,
+                        "weight": 0,
+                        "reps": 8
+                    }
+                ]
+            },
+            {
+                "id": "0594",
+                "name": "lever seated calf raise",
+                "setList": [
+                    {
+                        "id": "1",
+                        "setNum": 1,
+                        "weight": 0,
+                        "reps": 15
+                    },
+                    {
+                        "id": "2",
+                        "setNum": 2,
+                        "weight": 0,
+                        "reps": 15
+                    }
+                ]
+            }
+        ]
+    }
+
+]
