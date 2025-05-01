@@ -33,7 +33,7 @@ export default function WorkoutScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.header}>Workout</Text>
+      <Text style={styles.header}>Workout!</Text>
       <TouchableOpacity style={styles.startButton} onPress={startWorkout}>
         <Text style={styles.buttonText}>{activeWorkout ? 'View Workout' : 'Start Workout'}</Text>
       </TouchableOpacity>
