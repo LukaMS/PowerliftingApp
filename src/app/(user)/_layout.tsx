@@ -63,6 +63,15 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <TabBarIcon name="list" color={color} />,
         }}
       />
+
+      <Tabs.Screen
+        name="coach"
+        options={{
+          title: 'Coach',
+          headerShown: false,
+          tabBarIcon: ({ color }) => <TabBarIcon name="user-md" color={color} />
+        }}
+      />
     </Tabs>
   );
 }

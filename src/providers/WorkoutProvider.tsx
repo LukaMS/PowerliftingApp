@@ -1,7 +1,21 @@
-import { Exercise, Workout } from "@/types";
-import { createContext, useContext, useRef, useState } from "react";
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import defaultPrograms from '../../assets/data/programs.json';
+import { Exercise, Workout } from '@/types';
 
-interface WorkoutContextType extends Workout {
+interface WorkoutContextType {
+  // Current workout in progress
+  id: string;
+  name: string;
+  exercises: Exercise[];
+  date: string;
+  timer: number;
+
+  // Saved programs list
+  programs: Workout[];
+  addProgram: (program: Workout) => Promise<void>;
+
+  // Workout control methods
   addExercise: (exercise: Exercise) => void;
   removeExercise: (id: string) => void;
   updateExercise: (exercise: Exercise) => void;
@@ -10,12 +24,12 @@ interface WorkoutContextType extends Workout {
   resetTimer: () => void;
   activeWorkout: boolean;
   getWorkout: () => Workout;
-  loadProgram: (program: Workout) => void;
+  loadProgram: (program: Workout) => Promise<void>;
 }
 
 const initialWorkout: Workout = {
   id: Date.now().toString(),
-  name: "Workout Test",
+  name: 'Workout Test',
   exercises: [],
   date: new Date().toISOString(),
   timer: 0,
@@ -23,6 +37,8 @@ const initialWorkout: Workout = {
 
 const WorkoutContext = createContext<WorkoutContextType>({
   ...initialWorkout,
+  programs: [],
+  addProgram: async () => {},
   addExercise: () => {},
   removeExercise: () => {},
   updateExercise: () => {},
@@ -31,7 +47,7 @@ const WorkoutContext = createContext<WorkoutContextType>({
   resetTimer: () => {},
   activeWorkout: false,
   getWorkout: () => initialWorkout,
-  loadProgram: () => {},
+  loadProgram: async () => {},
 });
 
 interface WorkoutProviderProps {
@@ -40,39 +56,66 @@ interface WorkoutProviderProps {
 
 const WorkoutProvider: React.FC<WorkoutProviderProps> = ({ children }) => {
   const [workout, setWorkout] = useState<Workout>(initialWorkout);
-  const timerInterval = useRef<NodeJS.Timeout | null>(null);
+  const [programs, setPrograms] = useState<Workout[]>([]);
+  const timerInterval = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Load saved programs (or defaults) on mount
+  useEffect(() => {
+    (async () => {
+      try {
+        const stored = await AsyncStorage.getItem('programs');
+        if (stored) {
+          setPrograms(JSON.parse(stored));
+        } else {
+          setPrograms(
+            defaultPrograms.map((program: any) => ({
+              ...program,
+              date: new Date().toISOString(),
+              timer: 0,
+            }))
+          );
+        }
+      } catch (e) {
+        console.error('Error loading programs:', e);
+        setPrograms(
+          defaultPrograms.map((program: any) => ({
+            ...program,
+            date: new Date().toISOString(),
+            timer: 0,
+          }))
+        );
+      }
+    })();
+  }, []);
 
   const getWorkout = () => workout;
 
   const addExercise = (exercise: Exercise) => {
-    setWorkout((prevWorkout) => ({
-      ...prevWorkout,
-      exercises: [...prevWorkout.exercises, exercise],
+    setWorkout(prev => ({
+      ...prev,
+      exercises: [...prev.exercises, exercise],
     }));
   };
 
   const removeExercise = (id: string) => {
-    setWorkout((prevWorkout) => ({
-      ...prevWorkout,
-      exercises: prevWorkout.exercises.filter((exercise) => exercise.id !== id),
+    setWorkout(prev => ({
+      ...prev,
+      exercises: prev.exercises.filter(e => e.id !== id),
     }));
   };
 
   const updateExercise = (updated: Exercise) => {
-    setWorkout((w) => ({
-      ...w,
-      exercises: w.exercises.map((e) =>
-        e.id === updated.id ? updated : e
-      ),
+    setWorkout(prev => ({
+      ...prev,
+      exercises: prev.exercises.map(e => e.id === updated.id ? updated : e),
     }));
   };
 
   const startWorkout = () => {
-    // Reset the timer and set a new start date if desired.
-    setWorkout((prev) => ({ ...prev, timer: 0, date: new Date().toISOString() }));
+    setWorkout(prev => ({ ...prev, timer: 0, date: new Date().toISOString() }));
     if (!timerInterval.current) {
       timerInterval.current = setInterval(() => {
-        setWorkout((prevWorkout) => ({ ...prevWorkout, timer: prevWorkout.timer + 1 }));
+        setWorkout(prev => ({ ...prev, timer: prev.timer + 1 }));
       }, 1000);
     }
   };
@@ -82,43 +125,45 @@ const WorkoutProvider: React.FC<WorkoutProviderProps> = ({ children }) => {
       clearInterval(timerInterval.current);
       timerInterval.current = null;
     }
-    // Reset the workout to a fresh state by creating a new workout object.
-    setWorkout({
-      id: Date.now().toString(),
-      name: "Workout Test",
-      exercises: [],
-      date: new Date().toISOString(),
-      timer: 0,
-    });
+    setWorkout(initialWorkout);
   };
-  
 
   const resetTimer = () => {
-    setWorkout((prevWorkout) => ({ ...prevWorkout, timer: 0 }));
+    setWorkout(prev => ({ ...prev, timer: 0 }));
   };
 
   const activeWorkout = timerInterval.current !== null;
 
-  const loadProgram = (program: Workout) => {
-    // start from scratch, but use program’s exercises + name
-    setWorkout({
-      ...program,
-      date: new Date().toISOString(),
-      timer: 0,
-    });
+  const addProgram = async (program: Workout) => {
+    const updated = [program, ...programs];
+    setPrograms(updated);
+    try {
+      await AsyncStorage.setItem('programs', JSON.stringify(updated));
+    } catch (e) {
+      console.error('Error saving programs:', e);
+    }
+  };
+
+  const loadProgram = async (program: Workout) => {
+    // Persist it and then load as current workout
+    const fresh = { ...program, date: new Date().toISOString(), timer: 0 };
+    await addProgram(fresh);
+    setWorkout(fresh);
   };
 
   return (
     <WorkoutContext.Provider
       value={{
         ...workout,
+        programs,
+        addProgram,
         addExercise,
         removeExercise,
+        updateExercise,
         startWorkout,
         stopWorkout,
         resetTimer,
         activeWorkout,
-        updateExercise,
         getWorkout,
         loadProgram,
       }}
@@ -129,5 +174,4 @@ const WorkoutProvider: React.FC<WorkoutProviderProps> = ({ children }) => {
 };
 
 export default WorkoutProvider;
-
 export const useWorkout = () => useContext(WorkoutContext);

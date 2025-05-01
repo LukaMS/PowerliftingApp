@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, FlatList, Modal, Button } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useWorkout } from '@/providers/WorkoutProvider';
-import programs from '@assets/data/programs.json';
 import { Workout } from '@/types';
 import ExerciseCardReadOnly from '@/components/ExerciseCardReadOnly';
 
@@ -12,7 +11,7 @@ export default function WorkoutScreen() {
   const { activeWorkout, loadProgram } = useWorkout();
   const [selected, setSelected] = useState<Workout | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
-
+  const {programs} = useWorkout();
   const startWorkout = () => {
     router.push('/(user)/workout/activeWorkout');
   };
