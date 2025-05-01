@@ -9,7 +9,7 @@ const ExerciseScreen = () => {
   const exercises = useExercises(
     search.trim().length > 0 ? { search } : {},
     0,
-    1000
+    2000
   );
 
   return (

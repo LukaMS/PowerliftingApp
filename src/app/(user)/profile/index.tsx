@@ -2,11 +2,18 @@ import React from 'react';
 import { SafeAreaView, View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useAuth } from '@/providers/AuthProvider';
 import { useProfile } from '@/hooks/useProfile';
+import { useQuery } from '@tanstack/react-query';
+import { fetchWorkoutCount } from '@/api/profile';
 
 const ProfileScreen = () => {
   const { session, loading: authLoading } = useAuth();
   const userId = session?.user.id || '';
   const { data: profileData, isLoading: profileLoading, error: profileError } = useProfile(userId);
+  const { data: workoutCount, isLoading: countLoading, error: countError } = useQuery({
+    queryKey: ['workoutCount', userId],
+    queryFn: () => fetchWorkoutCount(userId),
+    enabled: !!userId,
+  });
 
   if (authLoading || profileLoading) {
     return <ActivityIndicator style={styles.loader} size="large" />;
@@ -37,7 +44,9 @@ const ProfileScreen = () => {
       </View>
       <View style={styles.card}>
         <Text style={styles.label}>Total Workouts</Text>
-        <Text style={styles.value}>42</Text>
+        <Text style={styles.value}>
+          {countLoading ? '...' : countError ? 'Error' : workoutCount}
+        </Text>
       </View>
       <TouchableOpacity style={styles.button} onPress={() => {/* TODO: navigate to edit */}}>
         <Text style={styles.buttonText}>Edit Profile</Text>

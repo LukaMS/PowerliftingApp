@@ -1,7 +1,7 @@
 import * as SQLite from 'expo-sqlite';
 import { Asset } from 'expo-asset';
 import * as FileSystem from 'expo-file-system';
-import exercisesData from '@assets/exercises.json';
+import newExercises from '@assets/new-exercises.json';
 /**
  * Type definition for an exercise record.
  */
@@ -13,7 +13,7 @@ export type Exercise = {
   equipment: string;
   gifUrl: string;
   instructions: string;
-  videoUrl: string;
+  secondaryMuscles: string[];      // new!
 };
 
 const DB_NAME = 'exercises.db';
@@ -26,23 +26,26 @@ let db: SQLite.SQLiteDatabase;
  * - Seed the table from bundled JSON on first launch
  */
 export async function initDB(): Promise<void> {
-  // 1) Open (or create) the database
   db = await SQLite.openDatabaseAsync(DB_NAME);
-  // Map the loaded JSON to match the Exercise type
-  const exercises: Exercise[] = (exercisesData.data.exercises as any[]).map((ex) => ({
-    id: ex.exerciseId,
-    name: ex.name,
-    bodyPart: ex.bodyParts?.[0] || '',
-    target: ex.targetMuscles?.[0] || '',
-    equipment: ex.equipments?.[0] || '',
-    gifUrl: ex.gifUrl,
-    instructions: Array.isArray(ex.instructions) ? ex.instructions.join('\n') : (ex.instructions || ''),
-    videoUrl: ex.videoUrl || ''
+
+  // map JSON → typed objects
+  const exercises: Exercise[] = (newExercises as any[]).map(ex => ({
+    id:           ex.id,
+    name:         ex.name,
+    bodyPart:     ex.bodyPart      || '',
+    target:       ex.target        || '',
+    equipment:    ex.equipment     || '',
+    gifUrl:       ex.gifUrl,
+    instructions: Array.isArray(ex.instructions)
+                     ? ex.instructions.join('\n')
+                     : (ex.instructions || ''),
+    secondaryMuscles: Array.isArray(ex.secondaryMuscles)
+                     ? ex.secondaryMuscles
+                     : []
   }));
 
-  // 3) Run schema creation and seeding in one transaction
   await db.withTransactionAsync(async () => {
-    // Create table if missing
+    // create table if it doesn't exist
     await db.execAsync(`
       CREATE TABLE IF NOT EXISTS exercises (
         id TEXT PRIMARY KEY,
@@ -52,20 +55,19 @@ export async function initDB(): Promise<void> {
         equipment TEXT,
         gifUrl TEXT,
         instructions TEXT,
-        videoUrl TEXT
+        secondaryMuscles TEXT
       );
     `);
 
-    // Check if table is empty
-    const countRows = await db.getAllAsync<{ cnt: number }>('SELECT COUNT(*) AS cnt FROM exercises;');
-    const count = countRows[0]?.cnt ?? 0;
-
-    // If empty, insert all records
-    if (count === 0) {
+    // only seed on first launch when table is empty
+    const rows = await db.getAllAsync<{ count: number }>(
+      `SELECT COUNT(*) AS count FROM exercises;`
+    );
+    if (rows[0].count === 0) {
       for (const ex of exercises) {
         await db.runAsync(
-          `INSERT OR IGNORE INTO exercises
-            (id, name, bodyPart, target, equipment, gifUrl, instructions, videoUrl)
+          `INSERT INTO exercises
+             (id, name, bodyPart, target, equipment, gifUrl, instructions, secondaryMuscles)
            VALUES (?, ?, ?, ?, ?, ?, ?, ?);`,
           ex.id,
           ex.name,
@@ -73,13 +75,14 @@ export async function initDB(): Promise<void> {
           ex.target,
           ex.equipment,
           ex.gifUrl,
-          ex.instructions || '',
-          ex.videoUrl || ''
+          ex.instructions,
+          ex.secondaryMuscles.join(',')
         );
       }
     }
   });
 }
+
 
 /**
  * Execute a read-only SQL query and return all rows as typed objects.

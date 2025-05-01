@@ -1,14 +1,33 @@
+import React from "react";
 import HistoryCard from "@/components/HistoryCard";
 import { Workout } from "@/types";
-import { dummyWorkouts } from "@assets/data/workouts";
 import { useNavigation } from "expo-router";
-import React from "react";
-import { FlatList, View, StyleSheet } from "react-native";
+import { FlatList, View, StyleSheet, ActivityIndicator, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useAuth } from '@/providers/AuthProvider';
+import { useQuery } from '@tanstack/react-query';
+import { fetchWorkouts } from '@/api/profile';
 
 const HistoryPage = () => {
     const navigation = useNavigation<any>();
-    const workoutData = dummyWorkouts;
+    const { session, loading: authLoading } = useAuth();
+    const userId = session?.user.id || '';
+    const { data: workoutData, isLoading: workoutsLoading, error: workoutsError } = useQuery({
+      queryKey: ['workouts', userId],
+      queryFn: () => fetchWorkouts(userId),
+      enabled: !!userId,
+    });
+
+    if (authLoading || workoutsLoading) {
+      return <ActivityIndicator style={styles.loader} size="large" />;
+    }
+    if (workoutsError) {
+      return (
+        <SafeAreaView style={styles.container}>
+          <Text>Error loading workouts</Text>
+        </SafeAreaView>
+      );
+    }
 
     const renderItem = ({ item }: { item: Workout }) => (
       <HistoryCard
@@ -22,7 +41,7 @@ const HistoryPage = () => {
     return (
       <SafeAreaView style={styles.container}>
         <FlatList
-          data={workoutData}
+          data={workoutData || []}
           keyExtractor={(item) => item.id}
           renderItem={renderItem}
         />
@@ -37,5 +56,10 @@ const HistoryPage = () => {
       flex: 1,
       padding: 15,
       backgroundColor: '#f2f2f2',
+    },
+    loader: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
     },
   });

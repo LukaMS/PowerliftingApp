@@ -1,8 +1,11 @@
 import React, { useCallback, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, Button, Keyboard, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, Button, Keyboard, TouchableWithoutFeedback, Alert } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useWorkout } from '@/providers/WorkoutProvider';
 import { useRouter } from 'expo-router';
+import { useAuth } from '@/providers/AuthProvider';
+import { saveWorkout } from '@/api/profile';
+import { useQueryClient } from '@tanstack/react-query';
 import ExerciseCard from '@/components/ExerciseCard';
 import { ExercisePicker } from '@/components/ExercisePicker';
 import { Exercise } from '@/types';
@@ -17,6 +20,8 @@ const formatTime = (seconds: number): string => {
 const WorkoutModal = () => {
   const workoutCtx = useWorkout();
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const { session } = useAuth();
   const [pickerVisible, setPickerVisible] = useState(false);
   
 
@@ -29,9 +34,19 @@ const WorkoutModal = () => {
     }, [])
   );
 
-  const finishWorkout = () => {
+  const finishWorkout = async () => {
     const currentWorkout = workoutCtx.getWorkout();
     console.log('Workout:', JSON.stringify(currentWorkout, null, 2));
+    try {
+      const userId = session?.user.id;
+      if (!userId) throw new Error('User not signed in');
+      await saveWorkout(currentWorkout, userId);
+      // refresh history and profile counts
+      queryClient.invalidateQueries({ queryKey: ['workouts', userId] });
+      queryClient.invalidateQueries({ queryKey: ['workoutCount', userId] });
+    } catch (e: any) {
+      Alert.alert('Error saving workout', e.message || String(e));
+    }
     workoutCtx.stopWorkout();
     workoutCtx.resetTimer();
     router.back();
