@@ -40,6 +40,7 @@ const HistoryPage = () => {
   
     return (
       <SafeAreaView style={styles.container}>
+        <Text style={styles.header}>History</Text>
         <FlatList
           data={workoutData || []}
           keyExtractor={(item) => item.id}
@@ -57,6 +58,7 @@ const HistoryPage = () => {
       padding: 15,
       backgroundColor: '#f2f2f2',
     },
+    header: { fontSize: 32, fontWeight: 'bold', marginBottom: 20, textAlign: 'center' },
     loader: {
       flex: 1,
       justifyContent: 'center',

@@ -28,7 +28,6 @@ let db: SQLite.SQLiteDatabase;
 export async function initDB(): Promise<void> {
   db = await SQLite.openDatabaseAsync(DB_NAME);
 
-  // map JSON → typed objects
   const exercises: Exercise[] = (newExercises as any[]).map(ex => ({
     id:           ex.id,
     name:         ex.name,
@@ -45,7 +44,6 @@ export async function initDB(): Promise<void> {
   }));
 
   await db.withTransactionAsync(async () => {
-    // create table if it doesn't exist
     await db.execAsync(`
       CREATE TABLE IF NOT EXISTS exercises (
         id TEXT PRIMARY KEY,
@@ -59,29 +57,28 @@ export async function initDB(): Promise<void> {
       );
     `);
 
-    // only seed on first launch when table is empty
-    const rows = await db.getAllAsync<{ count: number }>(
-      `SELECT COUNT(*) AS count FROM exercises;`
-    );
-    if (rows[0].count === 0) {
-      for (const ex of exercises) {
-        await db.runAsync(
-          `INSERT INTO exercises
-             (id, name, bodyPart, target, equipment, gifUrl, instructions, secondaryMuscles)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?);`,
-          ex.id,
-          ex.name,
-          ex.bodyPart,
-          ex.target,
-          ex.equipment,
-          ex.gifUrl,
-          ex.instructions,
-          ex.secondaryMuscles.join(',')
-        );
-      }
+    // **Wipe out any old data** so we can reseed on every open
+    await db.execAsync(`DELETE FROM exercises;`);
+
+    // Reseed
+    for (const ex of exercises) {
+      await db.runAsync(
+        `INSERT INTO exercises
+           (id, name, bodyPart, target, equipment, gifUrl, instructions, secondaryMuscles)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?);`,
+        ex.id,
+        ex.name,
+        ex.bodyPart,
+        ex.target,
+        ex.equipment,
+        ex.gifUrl,
+        ex.instructions,
+        ex.secondaryMuscles.join(',')
+      );
     }
   });
 }
+
 
 
 /**

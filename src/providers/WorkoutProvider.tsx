@@ -25,6 +25,7 @@ interface WorkoutContextType {
   activeWorkout: boolean;
   getWorkout: () => Workout;
   loadProgram: (program: Workout) => Promise<void>;
+  resetPrograms: () => void;
 }
 
 const initialWorkout: Workout = {
@@ -48,6 +49,7 @@ const WorkoutContext = createContext<WorkoutContextType>({
   activeWorkout: false,
   getWorkout: () => initialWorkout,
   loadProgram: async () => {},
+  resetPrograms: async () => {},
 });
 
 interface WorkoutProviderProps {
@@ -147,8 +149,22 @@ const WorkoutProvider: React.FC<WorkoutProviderProps> = ({ children }) => {
   const loadProgram = async (program: Workout) => {
     // Persist it and then load as current workout
     const fresh = { ...program, date: new Date().toISOString(), timer: 0 };
-    await addProgram(fresh);
+    //await addProgram(fresh);
     setWorkout(fresh);
+  };
+
+  const resetPrograms = async () => {
+    try {
+      await AsyncStorage.removeItem('programs');
+      const reloaded = defaultPrograms.map((p: any) => ({
+        ...p,
+        date: new Date().toISOString(),
+        timer: 0,
+      }));
+      setPrograms(reloaded);
+    } catch (e) {
+      console.error('Failed to reset programs:', e);
+    }
   };
 
   return (
@@ -166,6 +182,7 @@ const WorkoutProvider: React.FC<WorkoutProviderProps> = ({ children }) => {
         activeWorkout,
         getWorkout,
         loadProgram,
+        resetPrograms,
       }}
     >
       {children}

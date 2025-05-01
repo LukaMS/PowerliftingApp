@@ -27,6 +27,9 @@ export default function WorkoutScreen() {
     setModalVisible(false);
     router.push('/(user)/workout/activeWorkout');
   };
+  const { resetPrograms } = useWorkout();
+
+
 
   return (
     <SafeAreaView style={styles.container}>

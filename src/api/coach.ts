@@ -1,7 +1,7 @@
 import { Exercise, Set } from '@/types';
 
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
-const API_KEY = process.env.OPENROUTER_API_KEY || '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';
+const API_KEY = process.env.EXPO_PUBLIC_OPENROUTER_API_KEY;
 const MODEL = process.env.OPENROUTER_MODEL || 'qwen/qwen3-4b:free'
 
 // Format returned workout to match assets/data/programs.json
@@ -22,6 +22,7 @@ export type GeneratedProgram = {
  * @param exercisesList optional list of exercises to include in the prompt
  */
 export async function askCoach(
+
   inputType: 'generate' | 'ask',
   text: string,
   exercisesList: { id: string; name: string }[] = []
@@ -41,7 +42,7 @@ Use only these when composing the workout.`
   const systemPrompt =
     inputType === 'generate'
       ? `You are a gym coach that outputs a complete workout as a JSON object in this exact format:
-{ "id": "<workout id>", "name": "<workout name>", "exercises": [ { "id": "<string>", "name": "<exercise name>", "setList": [ { "id": "1", "setNum": 1, "weight": 0, "reps": 12 }, ... ] }, ... ] }
+{ "id": "<workout id that is not just 001>", "name": "<workout name>", "exercises": [ { "id": "<string>", "name": "<exercise name>", "setList": [ { "id": "1", "setNum": 1, "weight": 0, "reps": 12 }, ... ] }, ... ] }
 Use the user's description to build the workout containing 3-8 exercises. ${listPrompt}
 Do not wrap in code fences or include extra text.`
       : 'You are a helpful gym coach. Answer the user question in plain text.';
@@ -65,6 +66,7 @@ Do not wrap in code fences or include extra text.`
     body: JSON.stringify(body)
   });
   console.log('[askCoach] response status:', res.status);
+  console.log(process.env.EXPO_PUBLIC_OPENROUTER_API_KEY);
   if (!res.ok) {
     const err = await res.text();
     console.error('[askCoach] fetch error response:', err);
