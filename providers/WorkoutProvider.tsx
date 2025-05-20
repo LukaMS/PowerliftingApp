@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import defaultPrograms from '../../assets/data/programs.json';
+import defaultPrograms from '@/assets/data/programs.json';
 import { Exercise, Workout } from '@/types';
 
 interface WorkoutContextType {
