@@ -3,7 +3,7 @@ import { SafeAreaView, View, Text, StyleSheet, Modal, TextInput, Button, Pressab
 import { ActivityIndicator } from 'react-native';
 import Markdown from 'react-native-markdown-display';
 import { askCoach } from '@/api/coach';
-import exercisesData from '../../../../assets/new-exercises.json';
+import exercisesData from 'assets/new-exercises.json';
 import ExerciseCardReadOnly from '@/components/ExerciseCardReadOnly';
 import { useWorkout } from '@/providers/WorkoutProvider';
 import type { GeneratedProgram } from '@/api/coach';
