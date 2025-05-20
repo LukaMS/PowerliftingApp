@@ -8,8 +8,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "test": "jest --watchAll",
-    "build": "next build",
-    "export": "next export"
+    "dev": "next dev",
+    "build": "next build"
   },
   "jest": {
     "preset": "jest-expo"
