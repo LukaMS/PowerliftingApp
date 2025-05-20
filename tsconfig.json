@@ -3,11 +3,11 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "@components/*": ["./src/components/*"],
+      "@/*": ["./*"],
+      "@components/*": ["./components/*"],
       "@assets/*": ["./assets/*"],
-      "@providers/*": ["./src/providers/*"],
-      "@db/*": ["./src/db/*"],
+      "@providers/*": ["./providers/*"],
+      "@db/*": ["./db/*"],
     }
   },
   "include": [
